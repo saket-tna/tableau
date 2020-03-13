@@ -114,11 +114,11 @@ select
   lineitem_id,
   dsp_filter,
   miq_advertiser_id,
-  miq_advertiser_name,
+  COALESCE(miq_advertiser_name, 'Unknown') AS miq_advertiser_name,
   agency_id,
-  agency_name,
-  jarvis_campaign_id,
-  dsp
+  COALESCE(agency_name, 'Unknown') AS agency_name,
+  COALESCE(jarvis_campaign_id, -1) AS jarvis_campaign_id,
+  COALESCE(dsp, 'Unknown') AS dsp
 from saket.report_url_keword_wl_tmp
 group by
   dayserial_numeric,
@@ -269,11 +269,11 @@ select
   lineitem_id,
   dsp_filter,
   miq_advertiser_id,
-  miq_advertiser_name,
+  COALESCE(miq_advertiser_name, 'Unknown') AS miq_advertiser_name,
   agency_id,
-  agency_name,
-  jarvis_campaign_id,
-  dsp
+  COALESCE(agency_name, 'Unknown') AS agency_name,
+  COALESCE(jarvis_campaign_id, -1) AS jarvis_campaign_id,
+  COALESCE(dsp, 'Unknown') AS dsp
 from saket.report_dbm_url_keword_wl_tmp
 group by
   dayserial_numeric,

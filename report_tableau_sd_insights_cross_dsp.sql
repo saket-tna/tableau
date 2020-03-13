@@ -50,8 +50,8 @@ from saket.tableau_feed_sitedomain_insights a
   left join bitanshu_adhoc.combined_dsp_lookup b on a.insertion_order_id = b.insertion_order_id;
 
 
-drop table if exists saket.tableau_sd_insights_cross_dsp;
-create table saket.tableau_sd_insights_cross_dsp
+drop table if exists saket.report_sd_insights_cross_dsp;
+create table saket.report_sd_insights_cross_dsp
 as
 select
   advertiser_id,
@@ -69,11 +69,11 @@ select
   dayserial_numeric,
   sum(imp) as impressions,
   miq_advertiser_id,
-  miq_advertiser_name,
+  COALESCE(miq_advertiser_name, 'Unknown') AS miq_advertiser_name,
   agency_id,
-  agency_name,
-  jarvis_campaign_id,
-  dsp
+  COALESCE(agency_name, 'Unknown') AS agency_name,
+  COALESCE(jarvis_campaign_id, -1) AS jarvis_campaign_id,
+  COALESCE(dsp, 'Unknown') AS dsp
 from saket.tableau_feed_sitedomain_insights_tmp
 group by
   advertiser_id,
@@ -176,7 +176,7 @@ select
 from saket.report_dbm_url_keword_wl a
   left join bitanshu_adhoc.combined_dsp_lookup b on a.insertion_order_id = b.insertion_order_id;
 
-insert into saket.tableau_sd_insights_cross_dsp
+insert into saket.report_sd_insights_cross_dsp
 select
   advertiser_id,
   NULL,
@@ -193,11 +193,11 @@ select
   dayserial_numeric,
   sum(imps) as impressions,
   miq_advertiser_id,
-  miq_advertiser_name,
+  COALESCE(miq_advertiser_name, 'Unknown') AS miq_advertiser_name,
   agency_id,
-  agency_name,
-  jarvis_campaign_id,
-  dsp
+  COALESCE(agency_name, 'Unknown') AS agency_name,
+  COALESCE(jarvis_campaign_id, -1) AS jarvis_campaign_id,
+  COALESCE(dsp, 'Unknown') AS dsp
 from saket.report_dbm_url_keword_wl_tmp
 group by
   advertiser_id,

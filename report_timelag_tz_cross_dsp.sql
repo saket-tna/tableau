@@ -153,11 +153,11 @@ SELECT
   SUM(pcconversions) AS pcconversions,
   SUM(pvconversions) AS pvconversions,
   miq_advertiser_id,
-  miq_advertiser_name,
+  COALESCE(miq_advertiser_name, 'Unknown') AS miq_advertiser_name,
   agency_id,
-  agency_name,
-  jarvis_campaign_id,
-  dsp
+  COALESCE(agency_name, 'Unknown') AS agency_name,
+  COALESCE(jarvis_campaign_id, -1) AS jarvis_campaign_id,
+  COALESCE(dsp, 'Unknown') AS dsp
 FROM saket.report_timelag_tz_tmp
 GROUP BY
   timezone,
@@ -347,11 +347,11 @@ SELECT
   SUM(post_click_conv) AS pcconversions,
   SUM(post_view_conv) AS pvconversions,
   miq_advertiser_id,
-  miq_advertiser_name,
+  COALESCE(miq_advertiser_name, 'Unknown') AS miq_advertiser_name,
   agency_id,
-  agency_name,
-  jarvis_campaign_id,
-  dsp
+  COALESCE(agency_name, 'Unknown') AS agency_name,
+  COALESCE(jarvis_campaign_id, -1) AS jarvis_campaign_id,
+  COALESCE(dsp, 'Unknown') AS dsp
 FROM saket.report_timelag_dbm_tmp
 GROUP BY
   timezone,

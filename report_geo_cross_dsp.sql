@@ -128,11 +128,11 @@ SELECT
   SUM(pc_conv) AS pc_conversions,
   SUM(pv_conv) AS pv_conversions,
   miq_advertiser_id,
-  miq_advertiser_name,
+  COALESCE(miq_advertiser_name, 'Unknown') AS miq_advertiser_name,
   agency_id,
-  agency_name,
-  jarvis_campaign_id,
-  dsp
+  COALESCE(agency_name, 'Unknown') AS agency_name,
+  COALESCE(jarvis_campaign_id, -1) AS jarvis_campaign_id,
+  COALESCE(dsp, 'Unknown') AS dsp
 FROM saket.tableau_geo_report_tmp
 GROUP BY
   TO_DATE(UTC_dt),
@@ -235,6 +235,7 @@ SELECT
   a.clicks,
   a.conversions,
   a.buyer_spend,
+  a.day_numeric,
   b.miq_advertiser_id,
   b.miq_advertiser_name,
   b.agency_id,
@@ -277,18 +278,18 @@ SELECT
   SUM(buyer_spend) AS buyer_spend,
   SUM(clicks) AS clicks,
   SUM(conversions) AS conversions,
-  NULL,
+  day_numeric,
   SUM(impressions) As impressions,
   NULL,
   NULL,
   NULL,
   NULL,
   miq_advertiser_id,
-  miq_advertiser_name,
+  COALESCE(miq_advertiser_name, 'Unknown') AS miq_advertiser_name,
   agency_id,
-  agency_name,
-  jarvis_campaign_id,
-  dsp
+  COALESCE(agency_name, 'Unknown') AS agency_name,
+  COALESCE(jarvis_campaign_id, -1) AS jarvis_campaign_id,
+  COALESCE(dsp, 'Unknown') AS dsp
 FROM saket.google_dbm_insights_geo_tmp
 GROUP BY
   utc_date,
@@ -305,6 +306,7 @@ GROUP BY
   postal_code,
   lat,
   lon,
+  day_numeric,
   pixel_id,
   miq_advertiser_id,
   miq_advertiser_name,

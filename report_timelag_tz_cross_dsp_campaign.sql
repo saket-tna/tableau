@@ -1,5 +1,5 @@
 use cross_dsp_insights_tableau;
-CREATE EXTERNAL TABLE `report_timelag_tz_cross_dsp_agency`(
+CREATE EXTERNAL TABLE `report_timelag_tz_cross_dsp_campaign`(
   `dsp_advertiser_id` int,
   `advertiser_name` string,
   `browser_name` string,
@@ -46,12 +46,12 @@ CREATE EXTERNAL TABLE `report_timelag_tz_cross_dsp_agency`(
   `pvconversions` bigint,
   `miq_advertiser_id` string,
   `miq_advertiser_name` string,
+  `agency_id` string,
   `agency_name` string,
-  `jarvis_campaign_id` string,
   `dsp` string
 )
 PARTITIONED BY (
-  `agency_id` int)
+  `jarvis_campaign_id` int)
 ROW FORMAT SERDE
   'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe'
 STORED AS INPUTFORMAT
@@ -59,6 +59,6 @@ STORED AS INPUTFORMAT
 OUTPUTFORMAT
   'org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat'
 LOCATION
-  's3://dwh-reports-data/saket/cross_dsp_reports/report_timelag_tz';
+  's3://dwh-reports-data/tableau_cross_dsp_insights/report_timelag_tz';
 
-Alter table report_timelag_tz_cross_dsp_agency RECOVER PARTITIONS;
+Alter table report_timelag_tz_cross_dsp_campaign RECOVER PARTITIONS;

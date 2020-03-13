@@ -75,8 +75,8 @@ FROM saket.tableau_feed_insights a
   LEFT JOIN bitanshu_adhoc.combined_dsp_lookup b ON a.insertion_order_id = b.insertion_order_id;
 
 
-DROP TABLE if exists saket.tableau_feed_insights_cross_dsp;
-CREATE TABLE saket.tableau_feed_insights_cross_dsp
+DROP TABLE if exists saket.report_tableau_feed_cross_dsp;
+CREATE TABLE saket.report_tableau_feed_cross_dsp
 AS
 SELECT
   advertiser_id AS dsp_advertiser_id,
@@ -109,11 +109,11 @@ SELECT
   dayserial_numeric,
   SUM(media_cost_dollars_cpm) AS media_cost,
   miq_advertiser_id,
-  miq_advertiser_name,
+  COALESCE(miq_advertiser_name, 'Unknown') AS miq_advertiser_name,
   agency_id,
-  agency_name,
-  jarvis_campaign_id,
-  dsp
+  COALESCE(agency_name, 'Unknown') AS agency_name,
+  COALESCE(jarvis_campaign_id, -1) AS jarvis_campaign_id,
+  COALESCE(dsp, 'Unknown') AS dsp
 FROM saket.tableau_feed_insights_tmp
 GROUP BY
   advertiser_id,
@@ -245,7 +245,7 @@ SELECT
 FROM saket.googledbm_insights a
   LEFT JOIN bitanshu_adhoc.combined_dsp_lookup b ON a.insertion_order_id = b.insertion_order_id;
 
-INSERT INTO saket.tableau_feed_insights_cross_dsp
+INSERT INTO saket.report_tableau_feed_cross_dsp
 SELECT
   advertiser_id AS dsp_advertiser_id,
   browser_name,
@@ -277,11 +277,11 @@ SELECT
   dayserial_numeric,
   SUM(buyer_spend) AS media_cost,
   miq_advertiser_id,
-  miq_advertiser_name,
+  COALESCE(miq_advertiser_name, 'Unknown') AS miq_advertiser_name,
   agency_id,
-  agency_name,
-  jarvis_campaign_id,
-  dsp
+  COALESCE(agency_name, 'Unknown') AS agency_name,
+  COALESCE(jarvis_campaign_id, -1) AS jarvis_campaign_id,
+  COALESCE(dsp, 'Unknown') AS dsp
 FROM saket.dbm_feed_insights_tmp
 GROUP BY
   advertiser_id,
