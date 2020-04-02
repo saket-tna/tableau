@@ -84,7 +84,7 @@ SELECT
   b.campaign_id AS jarvis_campaign_id,
   b.dsp
 FROM saket.tableau_geo_report a
-  LEFT JOIN bitanshu_adhoc.combined_dsp_lookup b ON a.insertion_order_id = b.insertion_order_id;
+  LEFT JOIN saket.combined_dsp_lookup b ON a.insertion_order_id = b.insertion_order_id;
 
 DROP TABLE IF EXISTS saket.report_geo_cross_dsp;
 CREATE TABLE saket.report_geo_cross_dsp
@@ -243,7 +243,7 @@ SELECT
   b.campaign_id AS jarvis_campaign_id,
   b.dsp
 FROM saket.google_dbm_insights_geo a
-  LEFT JOIN bitanshu_adhoc.combined_dsp_lookup b ON a.insertion_order_id=b.insertion_order_id;
+  LEFT JOIN saket.combined_dsp_lookup b ON a.insertion_order_id=b.insertion_order_id;
 
 INSERT INTO saket.report_geo_cross_dsp
 SELECT

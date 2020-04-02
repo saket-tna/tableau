@@ -77,7 +77,7 @@ select
   b.campaign_id AS jarvis_campaign_id,
   b.dsp
 from saket.report_url_keword_wl a
-  left join bitanshu_adhoc.combined_dsp_lookup b on a.insertion_order_id = b.insertion_order_id;
+  left join saket.combined_dsp_lookup b on a.insertion_order_id = b.insertion_order_id;
 
 drop table if exists saket.report_url_keyword_cross_dsp;
 create table saket.report_url_keyword_cross_dsp
@@ -233,7 +233,7 @@ select
   b.campaign_id AS jarvis_campaign_id,
   b.dsp
 from saket.report_dbm_url_keword_wl a
-  left join bitanshu_adhoc.combined_dsp_lookup b on a.insertion_order_id = b.insertion_order_id;
+  left join saket.combined_dsp_lookup b on a.insertion_order_id = b.insertion_order_id;
 
 
 insert into saket.report_url_keyword_cross_dsp

@@ -101,7 +101,7 @@ SELECT
   b.campaign_id AS jarvis_campaign_id,
   b.dsp
 FROM saket.report_timelag_tz a
-  LEFT JOIN bitanshu_adhoc.combined_dsp_lookup b ON a.insertion_order_id = b.insertion_order_id;
+  LEFT JOIN saket.combined_dsp_lookup b ON a.insertion_order_id = b.insertion_order_id;
 
 
 DROP TABLE IF EXISTS saket.report_timelag_tz_cross_dsp;
@@ -298,7 +298,7 @@ SELECT
   b.campaign_id AS jarvis_campaign_id,
   b.dsp
 FROM saket.report_timelag_dbm a
-  LEFT JOIN bitanshu_adhoc.combined_dsp_lookup b ON a.insertion_order_id = b.insertion_order_id;
+  LEFT JOIN saket.combined_dsp_lookup b ON a.insertion_order_id = b.insertion_order_id;
 
 INSERT INTO saket.report_timelag_tz_cross_dsp
 SELECT

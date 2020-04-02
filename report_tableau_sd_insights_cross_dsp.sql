@@ -47,14 +47,13 @@ select
   b.campaign_id AS jarvis_campaign_id,
   b.dsp
 from saket.tableau_feed_sitedomain_insights a
-  left join bitanshu_adhoc.combined_dsp_lookup b on a.insertion_order_id = b.insertion_order_id;
+  left join saket.combined_dsp_lookup b on a.insertion_order_id = b.insertion_order_id;
 
 
 drop table if exists saket.report_sd_insights_cross_dsp;
 create table saket.report_sd_insights_cross_dsp
 as
 select
-  advertiser_id,
   campaign_group_id,
   campaign_id,
   dt,
@@ -76,7 +75,6 @@ select
   COALESCE(dsp, 'Unknown') AS dsp
 from saket.tableau_feed_sitedomain_insights_tmp
 group by
-  advertiser_id,
   campaign_group_id,
   campaign_id,
   dt,
@@ -174,11 +172,10 @@ select
   b.campaign_id AS jarvis_campaign_id,
   b.dsp
 from saket.report_dbm_url_keword_wl a
-  left join bitanshu_adhoc.combined_dsp_lookup b on a.insertion_order_id = b.insertion_order_id;
+  left join saket.combined_dsp_lookup b on a.insertion_order_id = b.insertion_order_id;
 
 insert into saket.report_sd_insights_cross_dsp
 select
-  advertiser_id,
   NULL,
   campaign_id,
   dt,
@@ -200,7 +197,6 @@ select
   COALESCE(dsp, 'Unknown') AS dsp
 from saket.report_dbm_url_keword_wl_tmp
 group by
-  advertiser_id,
   campaign_id,
   dt,
   geo_country,

@@ -1,6 +1,5 @@
 use cross_dsp_insights_tableau;
 CREATE EXTERNAL TABLE `report_sd_insights_cross_dsp_campaign`(
-  `advertiser_id` int,
   `campaign_group_id` int,
   `campaign_id` int,
   `dt` date,

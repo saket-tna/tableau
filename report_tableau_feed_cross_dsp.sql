@@ -40,7 +40,15 @@ AS
 SELECT
   a.dt,
   a.timezone,
-  a.weekday,
+  case when a.weekday = 'Sun' then 'Sunday'
+       when a.weekday = 'Mon' then 'Monday'
+       when a.weekday = 'Tue' then 'Tuesday'
+       when a.weekday = 'Wed' then 'Wednesday'
+       when a.weekday = 'Thu' then 'Thursday'
+       when a.weekday = 'Fri' then 'Friday'
+       when a.weekday = 'Sat' then 'Saturday'
+       else a.weekday
+  end as weekday,
   a.day_hour,
   a.time_of_day,
   a.creative_area,
@@ -72,7 +80,7 @@ SELECT
   b.campaign_id AS jarvis_campaign_id,
   b.dsp
 FROM saket.tableau_feed_insights a
-  LEFT JOIN bitanshu_adhoc.combined_dsp_lookup b ON a.insertion_order_id = b.insertion_order_id;
+  LEFT JOIN saket.combined_dsp_lookup b ON a.insertion_order_id = b.insertion_order_id;
 
 
 DROP TABLE if exists saket.report_tableau_feed_cross_dsp;
@@ -243,7 +251,7 @@ SELECT
   b.campaign_id AS jarvis_campaign_id,
   b.dsp
 FROM saket.googledbm_insights a
-  LEFT JOIN bitanshu_adhoc.combined_dsp_lookup b ON a.insertion_order_id = b.insertion_order_id;
+  LEFT JOIN saket.combined_dsp_lookup b ON a.insertion_order_id = b.insertion_order_id;
 
 INSERT INTO saket.report_tableau_feed_cross_dsp
 SELECT
