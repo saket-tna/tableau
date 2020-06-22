@@ -1,20 +1,20 @@
 drop table if exists saket.tableau_feed_sitedomain_insights;
 create external table saket.tableau_feed_sitedomain_insights
 (
-  advertiser_id            int,
-  campaign_group_id        int,
-  campaign_id              int,
-  dt                       date,
-  geo_country              string,
-  insertion_order_id       int,
-  pixel_id                 int,
-  site_domain              string,
-  site_domain_category     string,
-  timezone                 string,
-  click                    int,
-  conversions              int,
-  dayserial_numeric        int,
-  imp                      int
+  dt date,
+  timezone string,
+  geo_country string,
+  site_domain string,
+  site_domain_category string,
+  advertiser_id int,
+  insertion_order_id int,
+  campaign_group_id int,
+  campaign_id int,
+  pixel_id int,
+  dayserial_numeric int,
+  imp int,
+  click int,
+  conversions int
 )
 partitioned by (day_numeric bigint) row format delimited fields terminated by '\t'
 stored as textfile
@@ -47,7 +47,7 @@ select
   b.campaign_id AS jarvis_campaign_id,
   b.dsp
 from saket.tableau_feed_sitedomain_insights a
-  left join saket.combined_dsp_lookup b on a.insertion_order_id = b.insertion_order_id;
+LEFT JOIN saket.combined_dsp_lookup b ON a.insertion_order_id = b.insertion_order_id and a.campaign_group_id = b.lineitem_id and a.dt between b.start_date and b.end_date;
 
 
 drop table if exists saket.report_sd_insights_cross_dsp;
@@ -172,7 +172,7 @@ select
   b.campaign_id AS jarvis_campaign_id,
   b.dsp
 from saket.report_dbm_url_keword_wl a
-  left join saket.combined_dsp_lookup b on a.insertion_order_id = b.insertion_order_id;
+LEFT JOIN saket.combined_dsp_lookup b ON a.insertion_order_id = b.insertion_order_id and a.lineitem_id = b.placement_id and a.dt between b.start_date and b.end_date;
 
 insert into saket.report_sd_insights_cross_dsp
 select
