@@ -1,0 +1,4 @@
+--conf spark.executor.memory=5974m
+--conf spark.executor.memoryOverhead=1194
+--conf spark.executor.cores=4
+--conf spark.executor.instances=4

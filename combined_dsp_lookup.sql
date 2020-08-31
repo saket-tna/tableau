@@ -1,3 +1,10 @@
+SET mapreduce.map.memory.mb = 3584;
+SET mapreduce.reduce.memory.mb = 3584;
+SET mapreduce.map.java.opts = -Xmx2867m;
+SET mapreduce.reduce.java.opts = -Xmx2867m;
+SET mapreduce.map.cpu.vcores = 2;
+SET mapreduce.reduce.cpu.vcores = 2;
+
 Drop table if exists saket.dsp_dimension_tmp;
 Create table saket.dsp_dimension_tmp
 as
@@ -32,8 +39,6 @@ create table saket.opportunity_tmp
 as
 select distinct
   id as opportunity_id,
-  advertiser_id as miq_advertiser_id,
-  advertiser_name as miq_advertiser_name,
   agency_id,
   agency_name
 from jarvis.opportunity;
@@ -50,10 +55,11 @@ select distinct
   c.miq_advertiser_id,
   c.start_date,
   c.end_date,
-  d.miq_advertiser_name,
-  d.agency_id,
-  d.agency_name
+  d.name as miq_advertiser_name,
+  e.agency_id,
+  e.agency_name
 from saket.dsp_dimension_tmp a
 join saket.campaign_io_association_tmp b on a.insertion_order_id = b.insertion_order_id
 join saket.campaign_tmp c on b.campaign_id = c.campaign_id
-left join saket.opportunity_tmp d on c.opportunity_id = d.opportunity_id and c.miq_advertiser_id = d.miq_advertiser_id;
+join jarvis.advertiser_miq d on c.miq_advertiser_id = d.id
+left join saket.opportunity_tmp e on c.opportunity_id = e.opportunity_id;

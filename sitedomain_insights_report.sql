@@ -1,26 +1,9 @@
-drop table if exists saket.tableau_feed_sitedomain_insights;
-create external table saket.tableau_feed_sitedomain_insights
-(
-  dt date,
-  timezone string,
-  geo_country string,
-  site_domain string,
-  site_domain_category string,
-  advertiser_id int,
-  insertion_order_id int,
-  campaign_group_id int,
-  campaign_id int,
-  pixel_id int,
-  dayserial_numeric int,
-  imp int,
-  click int,
-  conversions int
-)
-partitioned by (day_numeric bigint) row format delimited fields terminated by '\t'
-stored as textfile
-location 's3://dwh-reports-data/srs_reports/tableau_reports/tableau_feed_sitedomain_insights/';
-
-alter table saket.tableau_feed_sitedomain_insights add partition(day_numeric=$DAYSERIAL_NUMERIC$);
+SET mapreduce.map.memory.mb = 3584;
+SET mapreduce.reduce.memory.mb = 3584;
+SET mapreduce.map.java.opts = -Xmx2867m;
+SET mapreduce.reduce.java.opts = -Xmx2867m;
+SET mapreduce.map.cpu.vcores = 2;
+SET mapreduce.reduce.cpu.vcores = 2;
 
 drop table if exists saket.tableau_feed_sitedomain_insights_tmp;
 create table saket.tableau_feed_sitedomain_insights_tmp
@@ -67,7 +50,7 @@ select
   sum(conversions) as conversions,
   dayserial_numeric,
   sum(imp) as impressions,
-  miq_advertiser_id,
+  COALESCE(miq_advertiser_id, -1) AS miq_advertiser_id,
   COALESCE(miq_advertiser_name, 'Unknown') AS miq_advertiser_name,
   agency_id,
   COALESCE(agency_name, 'Unknown') AS agency_name,
@@ -91,46 +74,6 @@ group by
   agency_name,
   jarvis_campaign_id,
   dsp;
-
-
-drop table if exists saket.report_dbm_url_keword_wl;
-create external table saket.report_dbm_url_keword_wl
-(
-  dayserial_numeric         int,
-  dt                        date,
-  monthname                 string,
-  week                      string,
-  geo_country               string,
-  advertiser_id             int,
-  advertiser_name           string,
-  insertion_order_id        int,
-  insertion_order_name      string,
-  lineitem_id               int,
-  lineitem_name             string,
-  campaign_id               int,
-  placement_name            string,
-  pixel_id                  int,
-  pixel_name                string,
-  site_domain_parse         string,
-  site_domain               string,
-  site_domain_category      string,
-  site_domain_subcategory   string,
-  word                      string,
-  imps                      int,
-  clicks                    int,
-  pv_convs                  int,
-  pc_convs                  int,
-  media_cost                double,
-  advertiser_category       string,
-  advertiser_subcategory    string,
-  dsp_filter                string,
-  final_wl_bl               string
-)
-partitioned by (day_numeric string) row format delimited fields terminated by '\t'
-stored as textfile
-location 's3://dwh-reports-data/srs_reports/dbm_reports/report_url_keyword_dbm_wl/';
-
-alter table saket.report_dbm_url_keword_wl add partition (day_numeric=$DAYSERIAL_NUMERIC$);
 
 
 drop table if exists saket.report_dbm_url_keword_wl_tmp;
@@ -176,7 +119,7 @@ LEFT JOIN saket.combined_dsp_lookup b ON a.insertion_order_id = b.insertion_orde
 
 insert into saket.report_sd_insights_cross_dsp
 select
-  NULL,
+  lineitem_id,
   campaign_id,
   dt,
   geo_country,
@@ -189,7 +132,7 @@ select
   sum(pc_convs+pv_convs) as conversions,
   dayserial_numeric,
   sum(imps) as impressions,
-  miq_advertiser_id,
+  COALESCE(miq_advertiser_id, -1) AS miq_advertiser_id,
   COALESCE(miq_advertiser_name, 'Unknown') AS miq_advertiser_name,
   agency_id,
   COALESCE(agency_name, 'Unknown') AS agency_name,
@@ -197,6 +140,7 @@ select
   COALESCE(dsp, 'Unknown') AS dsp
 from saket.report_dbm_url_keword_wl_tmp
 group by
+  lineitem_id,
   campaign_id,
   dt,
   geo_country,

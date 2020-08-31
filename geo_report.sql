@@ -1,45 +1,9 @@
-Drop table if exists saket.tableau_geo_report;
-Create EXTERNAL table saket.tableau_geo_report(
-  UTC_dt string,
-  geo_country string,
-  de_country_name string,
-  advertiser_id bigint,
-  advertiser string,
-  category string,
-  subcategory string,
-  agency string,
-  insertion_order_id bigint,
-  insertion_order string,
-  campaign_group_id bigint,
-  lineitem string,
-  campaign_id bigint,
-  campaign string,
-  pixel_id bigint,
-  pixel string,
-  dayserial_numeric bigint,
-  geo_region string,
-  geo_region_name string,
-  city_id string,
-  city_name string,
-  city_region string,
-  GEO_DMA string,
-  POSTAL_CODE string,
-  lat string,
-  lon string,
-  imp int,
-  click int,
-  pc_conv int,
-  pv_conv int,
-  media_cost_dollars_cpm string,
-  buyer_spend string
-)
-PARTITIONED BY (day_numeric bigint)
-ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t'
-STORED AS TEXTFILE
-LOCATION 's3://dwh-reports-data/srs_reports/tableau_reports/tableau_geo_report/';
-
-ALTER TABLE saket.tableau_geo_report ADD PARTITION (day_numeric= $DAYSERIAL_NUMERIC$);
-
+SET mapreduce.map.memory.mb = 3584;
+SET mapreduce.reduce.memory.mb = 3584;
+SET mapreduce.map.java.opts = -Xmx2867m;
+SET mapreduce.reduce.java.opts = -Xmx2867m;
+SET mapreduce.map.cpu.vcores = 2;
+SET mapreduce.reduce.cpu.vcores = 2;
 
 DROP TABLE IF EXISTS saket.tableau_geo_report_tmp;
 CREATE TABLE saket.tableau_geo_report_tmp
@@ -127,7 +91,7 @@ SELECT
   SUM(media_cost_dollars_cpm) AS media_cost_dollars_cpm,
   SUM(pc_conv) AS pc_conversions,
   SUM(pv_conv) AS pv_conversions,
-  miq_advertiser_id,
+  COALESCE(miq_advertiser_id, -1) AS miq_advertiser_id,
   COALESCE(miq_advertiser_name, 'Unknown') AS miq_advertiser_name,
   agency_id,
   COALESCE(agency_name, 'Unknown') AS agency_name,
@@ -167,46 +131,6 @@ GROUP BY
   agency_name,
   jarvis_campaign_id,
   dsp;
-
-Drop table if exists saket.google_dbm_insights_geo;
-CREATE EXTERNAL TABLE saket.google_dbm_insights_geo(
-  utc_date date,
-  dt date,
-  country string,
-  country_name string,
-  timezone string,
-  adv_tz_offset int,
-  advertiser_id int,
-  insertion_order_id int,
-  line_item_id int,
-  floodlight_id int,
-  geo_region_id string,
-  region_name string,
-  city_id string,
-  city_name string,
-  dma_code string,
-  postal_code string,
-  lat string,
-  lon string,
-  impressions int,
-  clicks int,
-  conversions int,
-  buyer_spend double
-)
-PARTITIONED BY (day_numeric bigint)
-ROW FORMAT SERDE
-  'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe'
-WITH SERDEPROPERTIES (
-  'field.delim'='\t',
-  'serialization.format'='\t')
-STORED AS INPUTFORMAT
-  'org.apache.hadoop.mapred.TextInputFormat'
-OUTPUTFORMAT
-  'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
-LOCATION
-  's3://dwh-reports-data/srs_reports/dbm_reports/tableau_dbm_insights_geo';
-
-Alter table saket.google_dbm_insights_geo ADD PARTITION (day_numeric=$DAYSERIAL_NUMERIC$);
 
 
 DROP TABLE IF EXISTS saket.google_dbm_insights_geo_tmp;
@@ -250,7 +174,7 @@ SELECT
   advertiser_id,
   NULL,
   NULL,
-  NULL,
+  line_item_id,
   NULL,
   NULL,
   NULL,
@@ -266,7 +190,7 @@ SELECT
   insertion_order_id,
   NULL,
   lat,
-  line_item_id,
+  NULL,
   lon,
   pixel_id,
   NULL,
@@ -284,7 +208,7 @@ SELECT
   NULL,
   NULL,
   NULL,
-  miq_advertiser_id,
+  COALESCE(miq_advertiser_id, -1) AS miq_advertiser_id,
   COALESCE(miq_advertiser_name, 'Unknown') AS miq_advertiser_name,
   agency_id,
   COALESCE(agency_name, 'Unknown') AS agency_name,

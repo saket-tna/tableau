@@ -175,7 +175,6 @@ CREATE EXTERNAL TABLE cross_dsp_insights_tableau.`report_timelag_tz_cross_dsp_ca
   `adv_tz_offset` double,
   `browser` int,
   `conversions` bigint,
-  `dayserial_numeric` int,
   `height` int,
   `width` int,
   `imp_type` int,
@@ -190,7 +189,8 @@ CREATE EXTERNAL TABLE cross_dsp_insights_tableau.`report_timelag_tz_cross_dsp_ca
 )
 PARTITIONED BY (
   `miq_advertiser_id` string,
-  `jarvis_campaign_id` int)
+  `jarvis_campaign_id` int,
+  `dayserial_numeric` int)
 ROW FORMAT SERDE
   'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe'
 STORED AS INPUTFORMAT
@@ -207,7 +207,7 @@ CREATE EXTERNAL TABLE cross_dsp_insights_tableau.`report_url_keyword_cross_dsp_c
   `dsp_advertiser_id` int,
   `advertiser_name` string,
   `advertiser_subcategory` string,
-  `campaign_group_id` string,
+  `campaign_group_id` int,
   `campaign_id` int,
   `dt` date,
   `final_wl_bl` string,
@@ -230,7 +230,7 @@ CREATE EXTERNAL TABLE cross_dsp_insights_tableau.`report_url_keyword_cross_dsp_c
   `pvconversions` bigint,
   `pcconversions` bigint,
   `monthname` string,
-  `lineitem_id` int,
+  `lineitem_id` string,
   `dsp_filter` string,
   `miq_advertiser_name` string,
   `agency_id` string,
@@ -251,19 +251,20 @@ LOCATION
   's3://dwh-reports-data/tableau_cross_dsp_insights/url_keyword_sd';
 
 
-DROP TABLE IF EXISTS cross_dsp_insights_tableau.tableau_feed_cross_dsp_lkup;
-CREATE EXTERNAL TABLE cross_dsp_insights_tableau.tableau_feed_cross_dsp_lkup(
+DROP TABLE IF EXISTS cross_dsp_insights_tableau.`tableau_feed_cross_dsp_lkup`;
+CREATE EXTERNAL TABLE cross_dsp_insights_tableau.`tableau_feed_cross_dsp_lkup`(
   miq_advertiser_name string,
   jarvis_campaign_name string,
+  insertion_order_name string,
+  strategy_name string,
+  pixel_name string,
   geo_country string,
-  insertion_order_id int,
   campaign_id int,
-  campaign_group_id int,
-  pixel_id int,
-  dayserial_numeric int
+  dsp string
 )PARTITIONED BY (
-  miq_advertiser_id string,
-  jarvis_campaign_id int)
+  miq_advertiser_id int,
+  jarvis_campaign_id int,
+  dayserial_numeric int)
 ROW FORMAT SERDE
   'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe'
 STORED AS INPUTFORMAT
@@ -272,5 +273,3 @@ OUTPUTFORMAT
   'org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat'
 LOCATION
   's3://dwh-reports-data/tableau_cross_dsp_insights/tableau_feed_cross_dsp_lkup';
-
-ALTER TABLE cross_dsp_insights_tableau.tableau_feed_cross_dsp_lkup RECOVER PARTITIONS;

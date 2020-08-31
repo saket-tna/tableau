@@ -1,37 +1,10 @@
-DROP TABLE if exists saket.tableau_feed_insights;
+SET mapreduce.map.memory.mb = 3584;
+SET mapreduce.reduce.memory.mb = 3584;
+SET mapreduce.map.java.opts = -Xmx2867m;
+SET mapreduce.reduce.java.opts = -Xmx2867m;
+SET mapreduce.map.cpu.vcores = 2;
+SET mapreduce.reduce.cpu.vcores = 2;
 
-CREATE EXTERNAL TABLE saket.tableau_feed_insights (
-  dt TIMESTAMP,
-  timezone string,
-  weekday string,
-  day_hour INT,
-  time_of_day string,
-  creative_area string,
-  geo_country string,
-  os_name string,
-  os_family string,
-  browser_name string,
-  advertiser_id INT,
-  insertion_order_id INT,
-  campaign_group_id INT,
-  campaign_id INT,
-  creative_id INT,
-  pixel_id INT,
-  device_model_name string,
-  device_make_name string,
-  device_type string,
-  supply_type string,
-  dayserial_numeric INT,
-  homebiz_type string,
-  isp_name string,
-  imp INT,
-  click INT,
-  conversion INT,
-  media_cost_dollars_cpm DOUBLE
-)
-PARTITIONED BY (day_numeric BIGINT) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t' STORED AS TEXTFILE LOCATION 's3://dwh-reports-data/srs_reports/tableau_reports/tableau_feed_insights/';
-
-ALTER TABLE saket.tableau_feed_insights ADD PARTITION (day_numeric = $DAYSERIAL_NUMERIC$);
 
 
 DROP TABLE if exists saket.tableau_feed_insights_tmp;
@@ -116,7 +89,7 @@ SELECT
   SUM(conversion) AS total_conversions,
   dayserial_numeric,
   SUM(media_cost_dollars_cpm) AS media_cost,
-  miq_advertiser_id,
+  COALESCE(miq_advertiser_id, -1) AS miq_advertiser_id,
   COALESCE(miq_advertiser_name, 'Unknown') AS miq_advertiser_name,
   agency_id,
   COALESCE(agency_name, 'Unknown') AS agency_name,
@@ -153,53 +126,6 @@ GROUP BY
   agency_name,
   jarvis_campaign_id,
   dsp;
-
-
-DROP TABLE if exists saket.googledbm_insights;
-
-CREATE EXTERNAL TABLE saket.googledbm_insights (
-  utc_dt DATE,
-  dt DATE,
-  country string,
-  country_name string,
-  timezone string,
-  adv_tz_offset INT,
-  dayserial_numeric INT,
-  advertiser_id INT,
-  insertion_order_id INT,
-  line_item_id INT,
-  creative_id INT,
-  creative_area string,
-  floodlight_id INT,
-  xchange INT,
-  ad_position INT,
-  geo_region_id INT,
-  region_name string,
-  city_id INT,
-  city_name string,
-  os_id INT,
-  os_name string,
-  browser_id INT,
-  browser_name string,
-  isp_id INT,
-  isp_name string,
-  device_type string,
-  device_type_name string,
-  mobile_make_id INT,
-  mobile_make_name string,
-  mobile_model_id INT,
-  model_name string,
-  weekday string,
-  dayhour INT,
-  time_of_day string,
-  impressions INT,
-  clicks INT,
-  conversions INT,
-  buyer_spend DOUBLE
-)
-PARTITIONED BY (day_numeric BIGINT) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t' STORED AS TEXTFILE LOCATION 's3://dwh-reports-data/srs_reports/dbm_reports/tableau_insights_dbm/';
-
-ALTER TABLE saket.googledbm_insights ADD PARTITION (day_numeric = $DAYSERIAL_NUMERIC$);
 
 DROP TABLE if exists saket.dbm_feed_insights_tmp;
 
@@ -257,7 +183,7 @@ INSERT INTO saket.report_tableau_feed_cross_dsp
 SELECT
   advertiser_id AS dsp_advertiser_id,
   browser_name,
-  NULL,
+  line_item_id,
   NULL,
   creative_area,
   creative_id,
@@ -284,7 +210,7 @@ SELECT
   SUM(conversions) AS total_conversions,
   dayserial_numeric,
   SUM(buyer_spend) AS media_cost,
-  miq_advertiser_id,
+  COALESCE(miq_advertiser_id, -1) AS miq_advertiser_id,
   COALESCE(miq_advertiser_name, 'Unknown') AS miq_advertiser_name,
   agency_id,
   COALESCE(agency_name, 'Unknown') AS agency_name,
@@ -313,6 +239,7 @@ GROUP BY
   miq_advertiser_id,
   miq_advertiser_name,
   agency_id,
+  line_item_id,
   agency_name,
   jarvis_campaign_id,
   dsp;

@@ -1,52 +1,9 @@
-Drop table if exists saket.report_timelag_tz;
-CREATE EXTERNAL TABLE saket.report_timelag_tz(
-  timezone                   string,
-  utc_dt                     timestamp,
-  dt                         timestamp,
-  adv_TZ_OFFSET              double,
-  tag_id                     int,
-  width                      int,
-  height                     int,
-  geo_country                string,
-  seller_member_id           int,
-  sellername                 string,
-  buyer_member_id            int,
-  creative_id                int,
-  creative_name              string,
-  advertiser_id              int,
-  advertiser_name            string,
-  campaign_group_id          int,
-  lineitemname               string,
-  campaign_id                int,
-  campaign_name              string,
-  pcconversions              int,
-  pvconversions              int,
-  utc_imp_dt                 timestamp,
-  imp_dt                     timestamp,
-  pixel_id                   int,
-  pixel_name                 string,
-  imp_type                   int,
-  publisher_id               int,
-  insertion_order_id         int,
-  insertion_order_name       string,
-  operating_system           int,
-  os_name                    string,
-  os_family                  string,
-  browser                    int,
-  browser_name               string,
-  LANGUAGE                   string,
-  media_cost_dollars_cpm     string,
-  site_domain                string,
-  dayserial_numeric          int,
-  time_lag_bucket            string,
-  category                   string,
-  subcategory                string,
-  leaf_name                  string
-)
-PARTITIONED BY (day_numeric bigint) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t' STORED AS TEXTFILE LOCATION 's3://dwh-reports-data/srs_reports/tableau_reports/report_timelag_tz/';
-
-ALTER TABLE saket.report_timelag_tz ADD PARTITION (day_numeric = $DAYSERIAL_NUMERIC$);
-
+SET mapreduce.map.memory.mb = 3584;
+SET mapreduce.reduce.memory.mb = 3584;
+SET mapreduce.map.java.opts = -Xmx2867m;
+SET mapreduce.reduce.java.opts = -Xmx2867m;
+SET mapreduce.map.cpu.vcores = 2;
+SET mapreduce.reduce.cpu.vcores = 2;
 
 DROP TABLE IF EXISTS saket.report_timelag_tz_tmp;
 CREATE TABLE saket.report_timelag_tz_tmp
@@ -152,7 +109,7 @@ SELECT
   operating_system,
   SUM(pcconversions) AS pcconversions,
   SUM(pvconversions) AS pvconversions,
-  miq_advertiser_id,
+  COALESCE(miq_advertiser_id, -1) AS miq_advertiser_id,
   COALESCE(miq_advertiser_name, 'Unknown') AS miq_advertiser_name,
   agency_id,
   COALESCE(agency_name, 'Unknown') AS agency_name,
@@ -205,50 +162,6 @@ GROUP BY
   agency_name,
   jarvis_campaign_id,
   dsp;
-
-DROP TABLE IF EXISTS saket.report_timelag_dbm;
-CREATE EXTERNAL TABLE saket.report_timelag_dbm(
-  timezone              string,
-  utc_dt                date,
-  dt                    date,
-  adv_TZ_OFFSET         int,
-  country               string,
-  country_name          string,
-  geo_region_id         int,
-  region_name           string,
-  city_id               int,
-  city_name             string,
-  os_id                 int,
-  os_name               string,
-  browser_id            int,
-  browser_name          string,
-  language              string,
-  xchange               int,
-  xchange_name          string,
-  site_domain           string,
-  advertiser_id         int,
-  advertiser_name       string,
-  insertion_order_id    int,
-  insertion_order_name  string,
-  line_item_id          int,
-  line_item_name        string,
-  creative_id           int,
-  creative_area         string,
-  floodlight_id         int,
-  floodlight_name       string,
-  post_click_conv       int,
-  post_view_conv        int,
-  imp_utc_dt            date,
-  imp_date              date,
-  buyer_spend           double,
-  time_lag_bucket       string,
-  dayserial_numeric     int,
-  category              string,
-  subcategory           string
-)
-PARTITIONED BY (day_numeric bigint) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t' STORED AS TEXTFILE LOCATION 's3://dwh-reports-data/srs_reports/dbm_reports/report_timelag_dbm/';
-
-Alter table saket.report_timelag_dbm add partition (day_numeric = $DAYSERIAL_NUMERIC$);
 
 DROP TABLE IF EXISTS saket.report_timelag_dbm_tmp;
 CREATE TABLE saket.report_timelag_dbm_tmp
@@ -306,7 +219,7 @@ SELECT
   advertiser_name,
   browser_name,
   NULL,
-  NULL,
+  line_item_id,
   NULL,
   NULL,
   category,
@@ -319,7 +232,7 @@ SELECT
   insertion_order_name,
   language,
   NULL,
-  line_item_id,
+  NULL,
   NULL,
   os_name,
   pixel_id,
@@ -346,7 +259,7 @@ SELECT
   NULL,
   SUM(post_click_conv) AS pcconversions,
   SUM(post_view_conv) AS pvconversions,
-  miq_advertiser_id,
+  COALESCE(miq_advertiser_id, -1) AS miq_advertiser_id,
   COALESCE(miq_advertiser_name, 'Unknown') AS miq_advertiser_name,
   agency_id,
   COALESCE(agency_name, 'Unknown') AS agency_name,

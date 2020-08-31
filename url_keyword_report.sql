@@ -1,40 +1,9 @@
-drop table if exists saket.report_url_keword_wl;
-create external table saket.report_url_keword_wl(
-  dayserial_numeric         int,
-  dt                        date,
-  monthname                 string,
-  week                      string,
-  geo_country               string,
-  advertiser_id             int,
-  advertiser_name           string,
-  insertion_order_id        int,
-  insertion_order_name      string,
-  lineitem_id               int,
-  lineitem_name             string,
-  campaign_id               int,
-  placement_name            string,
-  pixel_id                  int,
-  pixel_name                string,
-  site_domain_parse         string,
-  site_domain               string,
-  site_domain_category      string,
-  site_domain_subcategory   string,
-  word                      string,
-  imps                      int,
-  clicks                    int,
-  pv_convs                  int,
-  pc_convs                  int,
-  media_cost                double,
-  advertiser_category       string,
-  advertiser_subcategory    string,
-  dsp_filter                string,
-  final_wl_bl               string
-)
-partitioned by (day_numeric string) row format delimited fields terminated by '\t'
-stored as textfile
-location 's3://dwh-reports-data/srs_reports/daily_adsafe/report_sitedomain_keyword_wl/';
-
-alter table saket.report_url_keword_wl add partition (day_numeric=$DAYSERIAL_NUMERIC$);
+SET mapreduce.map.memory.mb = 3584;
+SET mapreduce.reduce.memory.mb = 3584;
+SET mapreduce.map.java.opts = -Xmx2867m;
+SET mapreduce.reduce.java.opts = -Xmx2867m;
+SET mapreduce.map.cpu.vcores = 2;
+SET mapreduce.reduce.cpu.vcores = 2;
 
 
 drop table if exists saket.report_url_keword_wl_tmp;
@@ -87,7 +56,7 @@ select
   advertiser_id as dsp_advertiser_id,
   advertiser_name,
   advertiser_subcategory,
-  CAST(NULL AS STRING) AS campaign_group_id,
+  lineitem_id AS campaign_group_id,
   campaign_id,
   dt,
   final_wl_bl,
@@ -111,9 +80,9 @@ select
   sum(pv_convs) as pvconversions,
   sum(pc_convs) as pcconversions,
   monthname,
-  lineitem_id,
+  cast(NULL as string) as lineitem_id,
   dsp_filter,
-  miq_advertiser_id,
+  COALESCE(miq_advertiser_id, -1) AS miq_advertiser_id,
   COALESCE(miq_advertiser_name, 'Unknown') AS miq_advertiser_name,
   agency_id,
   COALESCE(agency_name, 'Unknown') AS agency_name,
@@ -151,47 +120,6 @@ group by
   agency_name,
   jarvis_campaign_id,
   dsp;
-
-
-drop table if exists saket.report_dbm_url_keword_wl;
-create external table saket.report_dbm_url_keword_wl
-(
-  dayserial_numeric         int,
-  dt                        date,
-  monthname                 string,
-  week                      string,
-  geo_country               string,
-  advertiser_id             int,
-  advertiser_name           string,
-  insertion_order_id        int,
-  insertion_order_name      string,
-  lineitem_id               int,
-  lineitem_name             string,
-  campaign_id               int,
-  placement_name            string,
-  pixel_id                  int,
-  pixel_name                string,
-  site_domain_parse         string,
-  site_domain               string,
-  site_domain_category      string,
-  site_domain_subcategory   string,
-  word                      string,
-  imps                      int,
-  clicks                    int,
-  pv_convs                  int,
-  pc_convs                  int,
-  media_cost                double,
-  advertiser_category       string,
-  advertiser_subcategory    string,
-  dsp_filter                string,
-  final_wl_bl               string
-)
-partitioned by (day_numeric string) row format delimited fields terminated by '\t'
-stored as textfile
-location 's3://dwh-reports-data/srs_reports/dbm_reports/report_url_keyword_dbm_wl/';
-
-alter table saket.report_dbm_url_keword_wl add partition (day_numeric=$DAYSERIAL_NUMERIC$);
-
 
 drop table if exists saket.report_dbm_url_keword_wl_tmp;
 create table saket.report_dbm_url_keword_wl_tmp
@@ -242,7 +170,7 @@ select
   advertiser_id,
   advertiser_name,
   advertiser_subcategory,
-  NULL,
+  lineitem_id,
   campaign_id,
   dt,
   final_wl_bl,
@@ -266,9 +194,9 @@ select
   sum(pv_convs) as pvconversions,
   sum(pc_convs) as pcconversions,
   monthname,
-  lineitem_id,
+  NULL,
   dsp_filter,
-  miq_advertiser_id,
+  COALESCE(miq_advertiser_id, -1) AS miq_advertiser_id,
   COALESCE(miq_advertiser_name, 'Unknown') AS miq_advertiser_name,
   agency_id,
   COALESCE(agency_name, 'Unknown') AS agency_name,
