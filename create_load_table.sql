@@ -36,7 +36,11 @@ CREATE EXTERNAL TABLE saket.tableau_feed_insights (
   conversion INT,
   media_cost_dollars_cpm DOUBLE
 )
-PARTITIONED BY (day_numeric BIGINT) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t' STORED AS TEXTFILE LOCATION 's3://dwh-reports-data/srs_reports/tableau_reports/tableau_feed_insights/';
+PARTITIONED BY (day_numeric BIGINT)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY '\t'
+STORED AS TEXTFILE
+LOCATION 's3://dwh-reports-data/srs_reports/tableau_reports/tableau_feed_insights/';
 
 DROP TABLE if exists saket.googledbm_insights;
 
@@ -80,7 +84,11 @@ CREATE EXTERNAL TABLE saket.googledbm_insights (
   conversions INT,
   buyer_spend DOUBLE
 )
-PARTITIONED BY (day_numeric BIGINT) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t' STORED AS TEXTFILE LOCATION 's3://dwh-reports-data/srs_reports/dbm_reports/tableau_insights_dbm/';
+PARTITIONED BY (day_numeric BIGINT)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY '\t'
+STORED AS TEXTFILE
+LOCATION 's3://dwh-reports-data/srs_reports/dbm_reports/tableau_insights_dbm/';
 
 Drop table if exists saket.tableau_geo_report;
 Create EXTERNAL table saket.tableau_geo_report(
@@ -120,7 +128,7 @@ Create EXTERNAL table saket.tableau_geo_report(
 PARTITIONED BY (day_numeric bigint)
 ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t'
 STORED AS TEXTFILE
-LOCATION 's3://dwh-reports-data/srs_reports/tableau_reports/tableau_geo_report/';
+LOCATION 's3://dwh-reports-data/srs_reports/tableau_reports/tableau_geo_report/'; --check for 2020-09-19, 2020-09-16
 
 Drop table if exists saket.google_dbm_insights_geo;
 CREATE EXTERNAL TABLE saket.google_dbm_insights_geo(
@@ -180,7 +188,7 @@ create external table saket.tableau_feed_sitedomain_insights
 )
 partitioned by (day_numeric bigint) row format delimited fields terminated by '\t'
 stored as textfile
-location 's3://dwh-reports-data/srs_reports/tableau_reports/tableau_feed_sitedomain_insights/';
+location 's3://dwh-reports-data/srs_reports/tableau_reports/tableau_feed_sitedomain_insights/'; --check for 2020-09-15
 
 drop table if exists saket.report_dbm_url_keword_wl;
 create external table saket.report_dbm_url_keword_wl
@@ -264,7 +272,11 @@ CREATE EXTERNAL TABLE saket.report_timelag_tz(
   subcategory                string,
   leaf_name                  string
 )
-PARTITIONED BY (day_numeric bigint) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t' STORED AS TEXTFILE LOCATION 's3://dwh-reports-data/srs_reports/tableau_reports/report_timelag_tz/';
+PARTITIONED BY (day_numeric bigint)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY '\t'
+STORED AS TEXTFILE
+LOCATION 's3://dwh-reports-data/srs_reports/tableau_reports/report_timelag_tz/';
 
 DROP TABLE IF EXISTS saket.report_timelag_dbm;
 CREATE EXTERNAL TABLE saket.report_timelag_dbm(
@@ -306,7 +318,11 @@ CREATE EXTERNAL TABLE saket.report_timelag_dbm(
   category              string,
   subcategory           string
 )
-PARTITIONED BY (day_numeric bigint) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t' STORED AS TEXTFILE LOCATION 's3://dwh-reports-data/srs_reports/dbm_reports/report_timelag_dbm/';
+PARTITIONED BY (day_numeric bigint)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY '\t'
+STORED AS TEXTFILE
+LOCATION 's3://dwh-reports-data/srs_reports/dbm_reports/report_timelag_dbm/';
 
 drop table if exists saket.report_url_keword_wl;
 create external table saket.report_url_keword_wl(
@@ -342,4 +358,4 @@ create external table saket.report_url_keword_wl(
 )
 partitioned by (day_numeric string) row format delimited fields terminated by '\t'
 stored as textfile
-location 's3://dwh-reports-data/srs_reports/daily_adsafe/report_sitedomain_keyword_wl/';
+location 's3://dwh-reports-data/srs_reports/daily_adsafe/report_sitedomain_keyword_wl/'; --check after 2020-09-15
